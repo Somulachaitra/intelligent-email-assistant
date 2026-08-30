@@ -222,7 +222,7 @@ const SettingsPage = () => {
               </div>
               <div className="p-3.5 rounded-xl bg-[#161622] border border-[#222233] flex items-start gap-2.5">
                 <span className="text-[#00C896] font-bold">✓</span>
-                <span>Claude AI processing done via secure server proxy</span>
+                <span>Google Gemini AI processing done via secure server proxy</span>
               </div>
             </div>
           </section>

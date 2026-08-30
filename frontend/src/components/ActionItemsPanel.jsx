@@ -49,7 +49,7 @@ const ActionItemsPanel = ({ email }) => {
               {extractActions.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin text-[#00C896]" />
-                  <span>Extracting tasks with Claude AI...</span>
+                  <span>Extracting tasks with Gemini AI...</span>
                 </>
               ) : (
                 <>

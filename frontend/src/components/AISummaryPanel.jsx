@@ -161,7 +161,7 @@ const AISummaryPanel = ({ email }) => {
             <div className="p-4 rounded-xl bg-[#161622] border border-[#222233] animate-fade-in space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-bold text-gradient uppercase tracking-widest">// AI Executive Summary</p>
-                <span className="text-[10px] font-mono text-[#888899]">claude-sonnet-4-6</span>
+                <span className="text-[10px] font-mono text-[#888899]">gemini-2.5-flash</span>
               </div>
               <div className="space-y-2">
                 {summary.split('\n').filter(Boolean).map((line, i) => (

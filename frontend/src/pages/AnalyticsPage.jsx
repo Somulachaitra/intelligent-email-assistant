@@ -111,7 +111,7 @@ const AnalyticsPage = () => {
                   icon={Sparkles}
                   label="AI Summaries"
                   value={data.summary.summarized}
-                  subtext="Claude Sonnet processings"
+                  subtext="Google Gemini processings"
                   gradient="from-[#6C63FF] to-[#A5B4FC]"
                 />
                 <StatCard

@@ -1,16 +1,16 @@
 import React from 'react';
-import { Bot } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 const LoadingSkeleton = ({ type = 'email', count = 5 }) => {
   if (type === 'page') {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#6C63FF] to-[#00D4FF] flex items-center justify-center animate-pulse-glow">
-            <Bot className="w-7 h-7 text-white" />
+          <div className="w-14 h-14 rounded-2xl bg-[#8B6914] flex items-center justify-center shadow-md text-white">
+            <Mail className="w-7 h-7" />
           </div>
-          <div className="w-36 h-2 rounded-full bg-[#222233] overflow-hidden">
-            <div className="w-1/2 h-full bg-gradient-to-r from-[#6C63FF] to-[#00D4FF] animate-shimmer" />
+          <div className="w-36 h-2 rounded-full bg-[#E8E0D0] dark:bg-[#222233] overflow-hidden">
+            <div className="w-1/2 h-full bg-[#8B6914] animate-shimmer" />
           </div>
         </div>
       </div>
@@ -19,12 +19,12 @@ const LoadingSkeleton = ({ type = 'email', count = 5 }) => {
 
   if (type === 'email') {
     return (
-      <div className="space-y-3 p-3">
+      <div className="space-y-3">
         {Array.from({ length: count }).map((_, i) => (
           <div
             key={i}
-            className="flex items-start gap-4 p-5 rounded-2xl bg-[#111118] border border-[#222233] animate-fade-in"
-            style={{ animationDelay: `${i * 50}ms` }}
+            className="flex items-start gap-4 p-5 rounded-2xl bg-white dark:bg-[#111118] border border-[#E8E0D0] dark:border-[#222233] animate-fade-in shadow-xs"
+            style={{ animationDelay: `${i * 40}ms` }}
           >
             <div className="w-11 h-11 rounded-full shimmer shrink-0" />
             <div className="flex-1 space-y-3">
@@ -46,7 +46,7 @@ const LoadingSkeleton = ({ type = 'email', count = 5 }) => {
       <div className="space-y-5 p-6 max-w-4xl mx-auto">
         <div className="h-8 w-2/3 rounded-xl shimmer" />
         <div className="h-4 w-40 rounded-lg shimmer" />
-        <div className="card p-6 space-y-4 border border-[#222233] bg-[#111118]">
+        <div className="p-6 space-y-4 border border-[#E8E0D0] dark:border-[#222233] bg-white dark:bg-[#111118] rounded-2xl shadow-xs">
           <div className="flex items-center gap-4">
             <div className="w-11 h-11 rounded-full shimmer shrink-0" />
             <div className="space-y-2 flex-1">
@@ -68,12 +68,12 @@ const LoadingSkeleton = ({ type = 'email', count = 5 }) => {
     return (
       <div className="grid grid-cols-2 gap-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="card p-6 space-y-3 border border-[#222233] bg-[#111118]">
+          <div key={i} className="p-6 space-y-3 border border-[#E8E0D0] dark:border-[#222233] bg-white dark:bg-[#111118] rounded-2xl shadow-xs">
             <div className="h-3 w-28 rounded-lg shimmer" />
             <div className="h-10 w-20 rounded-xl shimmer" />
           </div>
         ))}
-        <div className="col-span-2 card p-6 h-64 shimmer rounded-2xl border border-[#222233]" />
+        <div className="col-span-2 p-6 h-64 shimmer rounded-2xl border border-[#E8E0D0] dark:border-[#222233] bg-white dark:bg-[#111118] shadow-xs" />
       </div>
     );
   }

@@ -60,20 +60,20 @@ const AIReplyEditor = ({ email, onClose }) => {
   const isGenerating = generateReply.isPending || toneReply.isPending;
 
   return (
-    <div className={`card border border-[#222233] bg-[#111118] overflow-hidden shadow-2xl transition-all duration-300 ${isGenerating ? 'animate-pulse-glow' : ''}`}>
+    <div className="bg-white dark:bg-[#111118] border border-[#E8E0D0] dark:border-[#222233] rounded-2xl overflow-hidden shadow-sm transition-all duration-300">
       {/* Header */}
-      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[#222233] bg-[#161622]/60">
-        <div className="p-1.5 rounded-lg bg-[#6C63FF]/20 text-[#6C63FF]">
-          <Wand2 className="w-4 h-4 text-[#00D4FF]" />
+      <div className="flex items-center gap-2.5 px-5 py-4 border-b border-[#E8E0D0] dark:border-[#222233] bg-white dark:bg-[#111118]">
+        <div className="p-1.5 rounded-lg bg-[#FAF4E6] dark:bg-[#8B6914]/20 text-[#8B6914] dark:text-[#E6C98F]">
+          <Wand2 className="w-4 h-4" />
         </div>
-        <span className="text-sm font-bold text-white tracking-wide">AI Smart Reply Editor</span>
+        <span className="text-sm font-serif font-bold text-[#2C2C2C] dark:text-white tracking-wide">AI Smart Reply Composer</span>
       </div>
 
-      <div className="p-5 space-y-5">
+      <div className="p-5 space-y-5 bg-[#FAF7F2] dark:bg-[#111118]">
         {/* Tone Selector Pills */}
         <div>
-          <label className="text-xs font-bold text-[#888899] uppercase tracking-wider mb-2.5 block font-mono">
-            Select Tone Persona
+          <label className="text-xs font-serif font-bold text-[#5C4A32] dark:text-slate-300 uppercase tracking-wider mb-2.5 block">
+            Tone Persona
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {TONES.map(({ key, label }) => (
@@ -81,10 +81,10 @@ const AIReplyEditor = ({ email, onClose }) => {
                 key={key}
                 id={`tone-${key}`}
                 onClick={() => setTone(key)}
-                className={`py-2 px-3 rounded-xl text-xs font-semibold tracking-wide transition-all border text-center ${
+                className={`py-2 px-3 rounded-full text-xs font-semibold tracking-wide transition-all border text-center ${
                   tone === key
-                    ? 'bg-[#161622] text-[#00D4FF] border-[#00D4FF] shadow-lg shadow-[#00D4FF]/20 scale-[1.02]'
-                    : 'bg-[#111118] text-[#888899] border-[#222233] hover:text-white hover:border-[#333348]'
+                    ? 'bg-[#8B6914] text-white border-[#8B6914] shadow-xs'
+                    : 'bg-white dark:bg-[#1A1A24] text-[#6B6B6B] dark:text-slate-400 border-[#E8E0D0] dark:border-[#222233] hover:text-[#2C2C2C] dark:hover:text-white hover:border-[#8B6914]/40'
                 }`}
               >
                 {label}
@@ -98,12 +98,12 @@ const AIReplyEditor = ({ email, onClose }) => {
           id="generate-reply-btn"
           onClick={handleGenerateReply}
           disabled={isGenerating}
-          className="w-full btn-gradient text-sm py-3 font-semibold"
+          className="w-full btn-gradient text-sm py-3 font-semibold shadow-xs"
         >
           {isGenerating ? (
             <>
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              <span>Synthesizing {tone} reply...</span>
+              <span>Drafting {tone} response...</span>
             </>
           ) : (
             <>
@@ -113,14 +113,14 @@ const AIReplyEditor = ({ email, onClose }) => {
           )}
         </button>
 
-        {/* Draft Editor Textarea with Glowing Purple Border on Focus */}
+        {/* Draft Editor Textarea */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-bold text-[#888899] uppercase tracking-wider block font-mono">
-              Email Response Body
+            <label className="text-xs font-serif font-bold text-[#5C4A32] dark:text-slate-300 uppercase tracking-wider block">
+              Response Draft
             </label>
             {grammarChecked && (
-              <span className="text-xs text-[#00C896] flex items-center gap-1 font-mono">
+              <span className="text-xs text-emerald-800 dark:text-emerald-400 flex items-center gap-1 font-semibold">
                 <CheckCircle className="w-3.5 h-3.5" />
                 Grammar Verified
               </span>
@@ -131,9 +131,9 @@ const AIReplyEditor = ({ email, onClose }) => {
             id="reply-draft-textarea"
             value={draft}
             onChange={(e) => { setDraft(e.target.value); setGrammarChecked(false); }}
-            placeholder="AI will generate a draft here based on tone, or write your custom reply..."
-            rows={8}
-            className="textarea-glowing"
+            placeholder="AI will generate a draft response here based on your selected tone..."
+            rows={7}
+            className="textarea-glowing bg-white dark:bg-[#1A1A24] border-[#E8E0D0] dark:border-[#222233] text-[#2C2C2C] dark:text-white placeholder-[#6B6B6B] dark:placeholder-slate-400"
           />
         </div>
 
@@ -143,14 +143,14 @@ const AIReplyEditor = ({ email, onClose }) => {
             id="grammar-check-btn"
             onClick={handleGrammarCheck}
             disabled={!draft || grammarCorrect.isPending}
-            className="btn-secondary text-xs py-2.5 flex-1 justify-center"
+            className="btn-secondary text-xs py-2.5 flex-1 justify-center dark:bg-[#1A1A24] dark:text-slate-200 dark:border-[#222233]"
           >
             {grammarCorrect.isPending ? (
-              <span className="w-3.5 h-3.5 border-2 border-[#888899] border-t-[#6C63FF] rounded-full animate-spin" />
+              <span className="w-3.5 h-3.5 border-2 border-[#6B6B6B] border-t-[#8B6914] rounded-full animate-spin" />
             ) : grammarChecked ? (
-              <CheckCircle className="w-3.5 h-3.5 text-[#00C896]" />
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
             ) : (
-              <RefreshCw className="w-3.5 h-3.5 text-[#A5B4FC]" />
+              <RefreshCw className="w-3.5 h-3.5 text-[#8B6914] dark:text-[#E6C98F]" />
             )}
             <span>{grammarChecked ? 'Grammar Checked' : 'Fix Grammar'}</span>
           </button>

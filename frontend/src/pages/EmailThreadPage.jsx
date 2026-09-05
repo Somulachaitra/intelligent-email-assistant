@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Star, Archive, Trash2, MailOpen, Mail,
-  Reply, ChevronDown, ChevronUp, Sparkles, User,
+  Reply, ChevronDown, ChevronUp, Command,
 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import AISummaryPanel from '../components/AISummaryPanel';
@@ -10,47 +10,50 @@ import AIReplyEditor from '../components/AIReplyEditor';
 import ActionItemsPanel from '../components/ActionItemsPanel';
 import ComposeModal from '../components/ComposeModal';
 import LoadingSkeleton from '../components/LoadingSkeleton';
+import ThemeToggle from '../components/ThemeToggle';
 import { useEmail, useToggleStar, useToggleRead, useArchiveEmail, useTrashEmail } from '../hooks/useEmails';
-import { extractSenderName, formatEmailDate, getInitials, getAvatarColor } from '../utils/formatters';
+import { extractSenderName, formatEmailDate, getInitials } from '../utils/formatters';
 
 const MessageItem = ({ message, isExpanded, onToggle }) => {
   const senderName = extractSenderName(message.from);
   const initials = getInitials(senderName);
-  const avatarColor = getAvatarColor(message.from);
+  const fullDateTooltip = message.date ? new Date(message.date).toLocaleString() : '';
 
   return (
-    <div className={`card border-[#222233] bg-[#111118] overflow-hidden transition-all duration-200 ${isExpanded ? 'shadow-xl' : 'cursor-pointer hover:border-[#333348]'}`}>
+    <div className={`bg-white dark:bg-[#111118] border border-[#E8E0D0] dark:border-[#222233] rounded-2xl overflow-hidden transition-all duration-200 ${isExpanded ? 'shadow-md dark:shadow-none' : 'cursor-pointer hover:border-[#8B6914]/40'}`}>
       {/* Message Header */}
       <div
-        className={`flex items-start gap-4 p-5 ${!isExpanded ? 'cursor-pointer' : ''}`}
+        className={`flex items-start gap-4 p-6 ${!isExpanded ? 'cursor-pointer' : ''}`}
         onClick={!isExpanded ? onToggle : undefined}
       >
-        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 shadow-md ${avatarColor}`}>
+        <div className="w-11 h-11 rounded-full bg-[#8B6914] text-white border border-[#8B6914]/30 flex items-center justify-center text-xs font-serif font-bold shrink-0 shadow-xs">
           {initials}
         </div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2">
-            <span className="font-bold text-white text-base tracking-tight">{senderName}</span>
+            <span className="font-serif font-bold text-[#2C2C2C] dark:text-white text-lg tracking-tight">{senderName}</span>
             <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-[#888899]">{formatEmailDate(message.date)}</span>
-              <button onClick={onToggle} className="text-[#888899] hover:text-white p-1">
+              <span className="text-xs font-sans text-[#6B6B6B] dark:text-slate-400 cursor-help" title={fullDateTooltip}>
+                {formatEmailDate(message.date)}
+              </span>
+              <button onClick={onToggle} className="text-[#6B6B6B] dark:text-slate-400 hover:text-[#2C2C2C] dark:hover:text-white p-1">
                 {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {!isExpanded && <p className="text-xs text-[#888899] truncate mt-1">{message.snippet}</p>}
+          {!isExpanded && <p className="text-xs text-[#6B6B6B] dark:text-slate-400 truncate mt-1">{message.snippet}</p>}
           {isExpanded && (
-            <p className="text-xs font-mono text-[#888899] mt-1">To: {message.to}</p>
+            <p className="text-xs font-sans text-[#6B6B6B] dark:text-slate-400 mt-1">To: {message.to}</p>
           )}
         </div>
       </div>
 
       {/* Message Body */}
       {isExpanded && (
-        <div className="px-6 pb-6 border-t border-[#222233]/60 bg-[#0A0A0F]/40">
-          <div className="pt-5 text-sm text-[#E0E0E6] leading-relaxed whitespace-pre-wrap font-sans">
+        <div className="px-6 sm:px-8 pb-8 pt-2 border-t border-[#E8E0D0] dark:border-[#222233] bg-white dark:bg-[#111118]">
+          <div className="pt-4 text-sm sm:text-base text-[#2C2C2C] dark:text-slate-200 leading-relaxed whitespace-pre-wrap font-sans">
             {message.body || message.snippet}
           </div>
         </div>
@@ -77,6 +80,32 @@ const EmailThreadPage = () => {
   const firstMessage = messages[0];
   const mainSenderName = latestMessage ? extractSenderName(latestMessage.from) : 'Sender';
 
+  // Keyboard shortcuts handler: 'R' to reply, 'S' to star
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const activeElement = document.activeElement;
+      const isInput = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable
+      );
+      if (isInput) return;
+
+      if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        setShowReply(prev => !prev);
+      } else if (e.key === 's' || e.key === 'S') {
+        if (latestMessage) {
+          e.preventDefault();
+          toggleStar({ id: latestMessage.id, starred: !latestMessage.isStarred });
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [latestMessage, toggleStar]);
+
   const toggleMessage = (msgId) => {
     setExpandedMessages(prev => {
       const next = new Set(prev);
@@ -87,7 +116,7 @@ const EmailThreadPage = () => {
   };
 
   if (isLoading) return (
-    <div className="flex h-screen overflow-hidden bg-[#0A0A0F]">
+    <div className="flex h-screen overflow-hidden bg-[#F5F0E8] dark:bg-[#0A0A0F]">
       <Sidebar onCompose={() => setShowCompose(true)} />
       <main className="flex-1 overflow-y-auto p-6">
         <LoadingSkeleton type="thread" />
@@ -96,12 +125,12 @@ const EmailThreadPage = () => {
   );
 
   if (error || !thread) return (
-    <div className="flex h-screen overflow-hidden bg-[#0A0A0F]">
+    <div className="flex h-screen overflow-hidden bg-[#F5F0E8] dark:bg-[#0A0A0F]">
       <Sidebar onCompose={() => setShowCompose(true)} />
       <main className="flex-1 flex items-center justify-center">
-        <div className="text-center p-8 glass-card max-w-md">
-          <p className="text-[#888899] mb-4">Failed to load email thread.</p>
-          <button onClick={() => navigate(-1)} className="btn-secondary text-sm mx-auto">
+        <div className="text-center p-8 bg-white dark:bg-[#111118] border border-[#E8E0D0] dark:border-[#222233] rounded-2xl max-w-md shadow-sm">
+          <p className="text-[#6B6B6B] dark:text-slate-400 mb-4">Failed to load email thread.</p>
+          <button onClick={() => navigate(-1)} className="btn-secondary text-sm mx-auto dark:bg-[#1A1A24] dark:text-slate-200 dark:border-[#222233]">
             <ArrowLeft className="w-4 h-4" /> Go back
           </button>
         </div>
@@ -110,52 +139,59 @@ const EmailThreadPage = () => {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#0A0A0F] font-sans antialiased bg-dot-pattern">
+    <div className="flex h-screen overflow-hidden bg-[#F5F0E8] dark:bg-[#0A0A0F] font-sans antialiased bg-dot-pattern transition-colors duration-300 animate-fade-in">
       <Sidebar onCompose={() => setShowCompose(true)} />
 
       <main className="flex-1 flex overflow-hidden">
         {/* Main Conversation Column */}
-        <div className="flex-1 flex flex-col overflow-hidden border-r border-[#222233]">
+        <div className="flex-1 flex flex-col overflow-hidden border-r border-[#E8E0D0] dark:border-[#222233]">
 
           {/* Thread Header */}
-          <div className="border-b border-[#222233] bg-[#0A0A0F]/90 backdrop-blur-xl px-6 py-5">
-            <div className="flex items-center gap-4 mb-3">
-              <button
-                id="back-btn"
-                onClick={() => navigate(-1)}
-                className="p-2 rounded-xl bg-[#161622] text-[#888899] hover:text-white border border-[#222233] hover:border-[#6C63FF]/40 transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </button>
+          <div className="border-b border-[#E8E0D0] dark:border-[#222233] bg-white/90 dark:bg-[#111118]/90 backdrop-blur-xl px-6 sm:px-10 py-6 transition-colors duration-300">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <div className="flex items-center gap-4 min-w-0">
+                <button
+                  id="back-btn"
+                  onClick={() => navigate(-1)}
+                  className="p-2 rounded-xl bg-[#FAF7F2] dark:bg-[#1A1A24] text-[#6B6B6B] dark:text-slate-300 hover:text-[#2C2C2C] dark:hover:text-white border border-[#E8E0D0] dark:border-[#222233] hover:border-[#8B6914]/40 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
 
-              <div className="flex-1 min-w-0">
-                {/* Large Bold Sender Name at Top */}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-mono text-[#00D4FF] uppercase tracking-wider">// Conversation with</span>
-                  <span className="text-xs font-mono text-[#888899]">({messages.length} messages)</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-semibold text-[#8B6914] dark:text-[#E6C98F] uppercase tracking-wider">Conversation with</span>
+                    <span className="text-xs text-[#6B6B6B] dark:text-slate-400">({messages.length} messages)</span>
+                  </div>
+                  <h1 className="text-2xl sm:text-3xl font-serif font-extrabold text-[#2C2C2C] dark:text-white tracking-tight truncate mt-0.5">
+                    {mainSenderName}
+                  </h1>
+                  <p className="text-xs sm:text-sm text-[#5C4A32] dark:text-slate-300 truncate font-medium mt-1">
+                    Subject: {firstMessage?.subject || '(No Subject)'}
+                  </p>
                 </div>
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight truncate mt-0.5">
-                  {mainSenderName}
-                </h1>
-                <p className="text-xs text-[#888899] truncate font-medium mt-1">
-                  Subject: {firstMessage?.subject || '(No Subject)'}
-                </p>
+              </div>
+
+              {/* Theme Toggle */}
+              <div className="shrink-0">
+                <ThemeToggle />
               </div>
             </div>
 
             {/* Quick Action Toolbar */}
-            <div className="flex items-center gap-2.5 flex-wrap pt-2 border-t border-[#222233]/60">
+            <div className="flex items-center gap-2.5 flex-wrap pt-3 border-t border-[#E8E0D0] dark:border-[#222233]">
               <button
                 id="star-thread-btn"
                 onClick={() => latestMessage && toggleStar({ id: latestMessage.id, starred: !latestMessage.isStarred })}
                 disabled={isStarring}
-                className={`btn-secondary text-xs py-2 px-3 ${latestMessage?.isStarred ? 'text-amber-400 border-amber-500/40 bg-amber-500/10' : ''}`}
+                className={`btn-secondary text-xs py-2 px-3 dark:bg-[#1A1A24] dark:text-slate-200 dark:border-[#222233] ${latestMessage?.isStarred ? 'text-[#8B6914] dark:text-[#E6C98F] border-[#E6C98F] dark:border-[#8B6914]/40 bg-[#FAF4E6] dark:bg-[#8B6914]/20' : ''}`}
+                title="Press S to star"
               >
-                <Star className={`w-3.5 h-3.5 ${latestMessage?.isStarred ? 'fill-amber-400' : ''}`} />
-                <span>{latestMessage?.isStarred ? 'Starred' : 'Star'}</span>
+                <Star className={`w-3.5 h-3.5 ${latestMessage?.isStarred ? 'fill-[#8B6914] dark:fill-[#E6C98F]' : ''}`} />
+                <span>{latestMessage?.isStarred ? 'Starred' : 'Star (S)'}</span>
               </button>
 
-              <button id="archive-btn" onClick={() => latestMessage && archive(latestMessage.id)} className="btn-secondary text-xs py-2 px-3">
+              <button id="archive-btn" onClick={() => latestMessage && archive(latestMessage.id)} className="btn-secondary text-xs py-2 px-3 dark:bg-[#1A1A24] dark:text-slate-200 dark:border-[#222233]">
                 <Archive className="w-3.5 h-3.5" />
                 <span>Archive</span>
               </button>
@@ -168,7 +204,7 @@ const EmailThreadPage = () => {
               <button
                 id="mark-read-btn"
                 onClick={() => latestMessage && toggleRead({ id: latestMessage.id, read: latestMessage.isUnread })}
-                className="btn-secondary text-xs py-2 px-3"
+                className="btn-secondary text-xs py-2 px-3 dark:bg-[#1A1A24] dark:text-slate-200 dark:border-[#222233]"
               >
                 {latestMessage?.isUnread ? (
                   <><MailOpen className="w-3.5 h-3.5" /><span>Mark read</span></>
@@ -180,16 +216,17 @@ const EmailThreadPage = () => {
               <button
                 id="reply-btn"
                 onClick={() => setShowReply(r => !r)}
-                className="btn-gradient text-xs py-2 px-4 ml-auto"
+                className="btn-gradient text-xs py-2 px-4 ml-auto shadow-sm font-semibold animate-pulse-gently"
+                title="Press R to reply"
               >
                 <Reply className="w-3.5 h-3.5" />
-                <span>Reply with AI</span>
+                <span>Reply with AI (R)</span>
               </button>
             </div>
           </div>
 
           {/* Messages Feed */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <div className="flex-1 overflow-y-auto p-6 sm:p-10 space-y-6 max-w-4xl mx-auto w-full">
             {messages.map((msg, idx) => (
               <MessageItem
                 key={msg.id}
@@ -203,7 +240,7 @@ const EmailThreadPage = () => {
 
         {/* AI Assistant Sidebar Panel */}
         {latestMessage && (
-          <div className="w-96 shrink-0 bg-[#0A0A0F]/80 backdrop-blur-xl overflow-y-auto p-5 space-y-5">
+          <div className="w-96 shrink-0 bg-[#FAF7F2]/90 dark:bg-[#111118]/90 backdrop-blur-xl border-l border-[#E8E0D0] dark:border-[#222233] border-l-[#8B6914]/40 overflow-y-auto p-6 space-y-6 transition-colors duration-300">
             <AISummaryPanel email={latestMessage} />
             <ActionItemsPanel email={latestMessage} />
             {showReply && (

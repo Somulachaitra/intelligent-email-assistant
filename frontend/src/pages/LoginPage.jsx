@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Mail, Sparkles, ShieldCheck, ArrowRight } from 'lucide-react';
 import { getToken } from '../utils/token';
 import ThemeToggle from '../components/ThemeToggle';
@@ -81,9 +82,20 @@ const LoginPage = () => {
         </div>
 
         {/* Bottom Footer Note */}
-        <div className="text-xs text-[#6B6B6B] dark:text-slate-400 flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-[#8B6914] dark:text-[#E6C98F]" />
-          <span>OAuth 2.0 Direct Access &bull; Encrypted &bull; No passwords saved</span>
+        <div className="text-xs text-[#6B6B6B] dark:text-slate-400 flex flex-wrap items-center justify-between gap-4 mt-8">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-[#8B6914] dark:text-[#E6C98F]" />
+            <span>OAuth 2.0 Direct Access &bull; Encrypted &bull; No passwords saved</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link to="/privacy" className="hover:text-[#8B6914] dark:hover:text-[#E6C98F] underline transition-colors">
+              Privacy Policy
+            </Link>
+            <span>&bull;</span>
+            <Link to="/terms" className="hover:text-[#8B6914] dark:hover:text-[#E6C98F] underline transition-colors">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -113,6 +125,21 @@ const LoginPage = () => {
             <p className="text-xs text-[#6B6B6B] dark:text-slate-400 leading-relaxed">
               By continuing, you connect your Gmail account securely using Google's official APIs.
             </p>
+            <div className="mt-3 flex items-center justify-center gap-3 text-xs text-[#6B6B6B] dark:text-slate-400">
+              <Link 
+                to="/privacy" 
+                className="hover:text-[#8B6914] dark:hover:text-[#E6C98F] underline transition-colors"
+              >
+                Privacy Policy
+              </Link>
+              <span>&bull;</span>
+              <Link 
+                to="/terms" 
+                className="hover:text-[#8B6914] dark:hover:text-[#E6C98F] underline transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </div>
           </div>
         </div>
       </div>

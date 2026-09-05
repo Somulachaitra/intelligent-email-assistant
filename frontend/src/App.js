@@ -14,6 +14,8 @@ const EmailThreadPage = lazy(() => import('./pages/EmailThreadPage'));
 const SearchPage = lazy(() => import('./pages/SearchPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'));
+const PrivacyPolicyPage = lazy(() => import('./pages/PrivacyPolicyPage'));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,6 +36,8 @@ function App() {
             <Suspense fallback={<div className="flex items-center justify-center h-screen bg-[#F5F0E8] dark:bg-[#0A0A0F] transition-colors duration-300"><LoadingSkeleton type="page" /></div>}>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
+                <Route path="/privacy" element={<PrivacyPolicyPage />} />
+                <Route path="/terms" element={<TermsOfServicePage />} />
                 <Route path="/" element={<Navigate to="/dashboard" replace />} />
                 <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
                 <Route path="/email/:id" element={<ProtectedRoute><EmailThreadPage /></ProtectedRoute>} />

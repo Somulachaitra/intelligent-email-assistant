@@ -49,10 +49,6 @@ const LoginPage = () => {
 
         {/* Center Editorial Hero Text */}
         <div className="my-16 lg:my-auto max-w-xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#FAF4E6] dark:bg-[#8B6914]/20 border border-[#E6C98F] dark:border-[#8B6914]/40 text-[#8B6914] dark:text-[#E6C9[...]
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>AI-Powered Executive Productivity</span>
-          </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-extrabold text-[#2C2C2C] dark:text-white tracking-tight leading-[1.15] mb-6">
             Your Inbox, <br />
